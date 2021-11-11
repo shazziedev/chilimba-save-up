@@ -114,6 +114,7 @@ export default BottomTabs = () => {
 
 			}} />
 			<BTab.Screen name="Settings" component={SettingsScreen} options={{
+					headerShown:false,
 					tabBarIcon:({focused})=>(
 						<View style={{
 						alignItems:'center',

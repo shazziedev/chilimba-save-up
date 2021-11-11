@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { ActivityIndicator, TouchableOpacity,
+import { ActivityIndicator, TouchableOpacity,ProgressBarAndroid,
   StyleSheet, Text, View ,Image,ScrollView,FlatList,
   Button,SafeAreaView} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
@@ -21,10 +21,10 @@ import {
   Switch
 } from 'react-native-paper';
 import { 
-  MaterialCommunityIcons, AntDesign,
+  MaterialCommunityIcons, AntDesign ,
   FontAwesome5,MaterialIcons,Ionicons,SimpleLineIcons ,
   Feather,FontAwesome,Entypo } from '@expo/vector-icons';
-
+import Chart from './chart.js';
 
 
 
@@ -105,9 +105,6 @@ const  CycleScreen = ({ navigation }) => {
     )
   }
        
-
-
-
 function ViewCycleSubHeading(){
   return(
     <View style={{paddingBottom:GetSize.PADDING/3,flexDirection:'row',justifyContent:'space-between'}}> 
@@ -117,13 +114,10 @@ function ViewCycleSubHeading(){
   )
 }
 
-
-
-
   function ViewCycle(){
     const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => navigation.navigate('CycleDetails')}
+      onPress={() => navigation.navigate('CycleDetails',{"itemInfo":item})}
     >
       <View style={{
         padding:GetSize.PADDING, 
@@ -133,7 +127,7 @@ function ViewCycleSubHeading(){
         alignItems:'center',
         width:GetSize.width /1.7
       }}  >  
-        <Text style={{paddingVertical:GetSize.PADDING/2 ,color:GetColor.SECONDARY,fontFamily: 'Inter_900Black', fontSize: 30,fontWeight:'bold'}}>${item.equity}.00</Text>
+        <Text style={{paddingVertical:GetSize.PADDING/2 ,color:GetColor.SECONDARY,fontFamily: 'Inter_900Black', fontSize: 30,fontWeight:'bold'}}>K{item.equity}.00</Text>
         <Avatar.Image
           size={120}
           source={{ uri: item.thumb }}
@@ -142,6 +136,7 @@ function ViewCycleSubHeading(){
       </View>
       </TouchableOpacity>
     );
+
 
 
 function AccountSummary(){
@@ -154,19 +149,19 @@ function AccountSummary(){
         backgroundColor:GetColor.WHITE, borderRadius:10,padding:GetSize.INDEX * 2,
         flexDirection:'row',justifyContent:'space-between',marginVertical:GetSize.INDEX / 2.5}}>
         <Text>Account Balance</Text>
-        <Text style={{fontSize:16,color:GetColor.TEAL}}>$3250.00</Text>
+        <Text style={{fontSize:16,color:GetColor.TEAL}}>K3250.00</Text>
       </View>
       <View style={{
         backgroundColor:GetColor.WHITE, borderRadius:10,padding:GetSize.INDEX * 2,
         flexDirection:'row',justifyContent:'space-between',marginVertical:GetSize.INDEX / 2.5}}>
         <Text>Sent</Text>
-        <Text style={{fontSize:16,color:GetColor.SECONDARY}}>$3000</Text>
+        <Text style={{fontSize:16,color:GetColor.SECONDARY}}>K1300.00</Text>
       </View>
       <View style={{
         backgroundColor:GetColor.WHITE, borderRadius:10,padding:GetSize.INDEX * 2,
         flexDirection:'row',justifyContent:'space-between',marginVertical:GetSize.INDEX / 2.5}}>
         <Text>Recieved</Text>
-        <Text style={{fontSize:16,color:GetColor.TEAL}}>$3000</Text>
+        <Text style={{fontSize:16,color:GetColor.TEAL}}>K3000.00</Text>
       </View>
     </View>
   )
@@ -190,31 +185,316 @@ function AccountSummary(){
     )
   }
 
-
-
-
-
-
-
   return (
     <View >
       {ViewNavBar()}
       {ViewHeader()}
       {ViewCycle()}
-     
+      
     </View>
   );
 }
 
 
 
-const CycleDetailScreen = () => {
+function CycleDetailScreen ({ route, navigation }) {
+
+{/* create header function */}
+  function ViewDetailsHeader(){
+    let { itemInfo } = route.params;
+    return(
+      <View style={{flexDirection:'row',justifyContent:'space-between',paddingVertical:GetSize.PADDING/1.5,backgroundColor:GetColor.WHITE,paddingTop:35 }}>
+
+        <View style={{marginLeft:10,marginTop:10,flexDirection:'row' ,paddingTop:2 }}>
+            <Entypo name="chevron-small-left" size={35} color="#333" onPress={()=>navigation.goBack()} />
+            <Avatar.Image
+              size={40}
+              style={{marginTop:0}}
+              source={{ uri: itemInfo.thumb }}
+              />
+            <Text style={{fontSize:18,marginTop:10,paddingHorizontal:10}}>{itemInfo.title}</Text>
+        </View>     
+        
+        <View style={{flexDirection:"row",marginRight:10,marginTop:10}}>
+          <View>
+            <Ionicons.Button onPress={()=>navigation.navigate('ChatRoom',{'info': itemInfo })} backgroundColor={null} color="#333" name="chatbox-outline" size={24} color="black" />
+            <View style={{
+              position:'absolute',
+              top:8,
+              right:17,
+              height:9,
+              width:9,
+              borderRadius:20,
+              backgroundColor:'red',
+            }}></View>
+        </View>
+          <Ionicons.Button backgroundColor={null} name="videocam-outline" size={24} color="black" />
+          <MaterialIcons.Button name="more-vert" size={24} color="black" backgroundColor={null} color="#333" />
+
+
+       </View>
+       </View>
+    )
+  }
+
+{/*function for equity barna*/}
+function HeaderBaner(){
+  let {itemInfo} = route.params;
+  return(
+      <View style={{backgroundColor:GetColor.WHITE, margin:GetSize.PADDING/2,borderRadius:10}}>
+        <View style={{padding:GetSize.PADDING/1.5}}>
+            <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+              <Text style={{fontSize:24,color:GetColor.TEAL}}>Equity</Text>
+              <Text style={{fontSize:24,color:GetColor.TEAL}}>K{itemInfo.equity}.00</Text>
+            </View>
+            <View >
+              <View style={{flexDirection:'row',justifyContent:'space-between',paddingVertical:GetSize.INDEX}}>
+                <Text style={{fontSize:14,color:GetColor.PRIMARY}}>start dated</Text>
+                <Text style={{fontSize:14,color:GetColor.SECONDARY}}>end dated</Text>
+              </View>
+             <ProgressBarAndroid
+              styleAttr="Horizontal"
+              indeterminate={false}
+              progress={0.7}
+            />
+            </View>
+           {/* <View>
+            <View style={{paddingVertical:GetSize.PADDING/4}}>
+              <Chart/>
+            </View>
+                         <Text style={{fontSize:14,color:GetColor.GRAY1,paddingVertical:GetSize.PADDING/6}}>Joy's Week</Text>
+                         <Avatar.Image 
+                           
+                           source={{uri:''}}
+                         />
+                       </View> */}
+        </View>
+      </View>
+    );
+}
+
+
+function MembersSvg() {
+
+  let { itemInfo } = route.params;
+  
+  return(
+    <View style={{justifyContent:'center',alignItems:'center',padding:GetSize.PADDING,marginVertical:GetSize.PADDING * 1.5}}>
+      <View style={{
+        width:GetSize.width/1.8,
+        height:GetSize.width/1.8,
+        borderWidth:2,
+        borderRadius:160,
+        borderColor:'teal',
+      }}>
+
+        <Avatar.Image
+              size={70}
+              style={{
+                position:'absolute',
+                top:-45,
+                right:100,
+
+                marginTop:0,
+              }}
+              source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTl8fGJ1c2luZXNzfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }}
+              />
+              <Avatar.Image
+                size={70}
+                style={{
+                  position:'absolute',
+                  top:80,
+                  right:-40,
+                  padding:2,
+                  borderWidth:2,
+                  borderColor:GetColor.SECONDARY,
+                  marginTop:0,
+                }}
+                source={{ uri: 'https://images.unsplash.com/photo-1578758837674-93ed0ab5fbab?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGJ1c2luZXNzJTIwYmxhY2slMjBtYW58ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }}
+              />
+              <Avatar.Image
+                size={70}
+                style={{
+                    position:'absolute',
+                    top:80,
+                    left:-40,
+                    padding:2,
+                    borderWidth:2,
+                    borderColor:GetColor.PRIMARY,
+                    marginTop:0,
+                  }}
+                source={{ uri: 'https://images.unsplash.com/photo-1530785602389-07594beb8b73?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fGJ1c2luZXNzJTIwYmxhY2slMjBtYW58ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60'}}
+              />
+              <Avatar.Image
+                size={70}
+                style={{
+                    position:'absolute',
+                    bottom:0,
+                    left:-10,
+                    padding:2,
+                    borderWidth:2,
+                    borderColor:GetColor.PRIMARY,
+                    marginTop:0,
+                  }}
+                source={{ uri: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fGJ1c2luZXNzJTIwYmxhY2slMjBtYW58ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }}
+              />
+               <Avatar.Image
+                size={70}
+                style={{
+                    position:'absolute',
+                    bottom:0,
+                    right:-5,
+                    padding:2,
+                    borderWidth:2,
+                    borderColor:GetColor.PRIMARY,
+                    marginTop:0,
+                  }}
+                source={{ uri: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8YnVzaW5lc3MlMjBibGFjayUyMG1hbnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }}
+              />
+              <View  size={70}
+                style={{
+                  backgroundColor:GetColor.TRANS_GRAY0,
+                  padding:GetSize.INDEX,
+                  borderRadius:10,
+                  position:'absolute',
+                  top:80,
+                  alignItems:'center',
+                  right:70,
+                }}>
+                  <Text style={{fontSize:20,fontWeight:'bold'}}>Ivy's week</Text>
+                  <Text>K{itemInfo.equity/5}.00 member </Text>
+                  <Text>deposit</Text>
+              </View>
+      </View>
+    </View>
+  )
+}
+
+
+function Transaction(){
+  let { itemInfo } = route.params;
+  return(
+    <View style={{
+      
+    }}>
+    <Text style={{marginHorizontal:GetSize.PADDING/2,color:GetColor.GRAY5, fontFamily: 'Inter_900Black', fontSize: 14,fontWeight:'bold'}}>
+      Transactions
+    </Text>
+
+      <View style={{
+       backgroundColor:GetColor.WHITE,padding:GetSize.PADDING/2,
+      marginTop:GetSize.PADDING/2,borderRadius:10,marginHorizontal:GetSize.PADDING/2,
+      flexDirection:'row',justifyContent:'space-between'
+    }}>
+        <Text>Recieved (4 members)</Text>
+        <Text style={{fontSize:16,color:GetColor.TEAL}}>K{itemInfo.equity-itemInfo.equity/5}.00</Text>
+      </View>
+      <View style={{
+        backgroundColor:GetColor.TEAL,padding:GetSize.PADDING/2,
+        marginTop:GetSize.PADDING/2,borderRadius:10,marginHorizontal:GetSize.PADDING/2,
+        flexDirection:'row',justifyContent:'center'
+      }}>
+        <Ionicons backgroundColor={null} name="card-outline" size={24} color="black" />
+        <Text style={{fontSize:16,color:GetColor.WHITE,marginHorizontal:10}}>Make Payment</Text>
+      </View>
+    </View>
+  );
+}
+{/* main detail function */}
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notification!</Text>
+    <View>
+    {/* show the header function */}
+
+      {ViewDetailsHeader()}
+      {HeaderBaner()}
+      {Transaction()}
+      {MembersSvg()}
     </View>
   );
 }
+
+function ChartRoom (){
+
+  return(
+  <View>
+      <View style={{justifyContent:'center', alignItems:'center',margin:GetSize.INDEX}}>
+          <Text style={{color:GetColor.LIGHT_G0}}> yesterday at 11:04 pm </Text>
+      </View>
+      <View style={{ flexDirection:'row',justifyContent:'space-between' }}>
+          <Text style={{ 
+            backgroundColor:GetColor.PRIMARY, padding:GetSize.PADDING/2,color:GetColor.WHITE,
+            position:'absolute',top:10,left:50,width:GetSize.width/8,borderRadius:10,
+          }}>Hi Ivy</Text>
+          <Text style={{
+            backgroundColor:GetColor.PRIMARY, padding:GetSize.PADDING/2, color:GetColor.WHITE,
+            position:'absolute',top:55,left:50,width:GetSize.width/3,borderRadius:10,
+          }}>Hey How are you?</Text>
+          <Avatar.Image
+              size={40}
+              style={{
+                position:'absolute',
+                top:100,
+                left:20,
+                
+              }}
+              source={{ uri: 'https://images.unsplash.com/photo-1578758837674-93ed0ab5fbab?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fGJ1c2luZXNzJTIwYmxhY2slMjBtYW58ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60' }}
+
+              />
+      </View>
+  </View>
+  );
+}
+
+function CycleChatRoom({ route, navigation }) {
+  let {info} = route.params;
+  {/* create header function */}
+  function ViewDetailsHeader(){
+    let { itemInfo } = route.params;
+    return(
+      <View style={{flexDirection:'row',justifyContent:'space-between',paddingVertical:GetSize.PADDING/1.5,backgroundColor:GetColor.WHITE,paddingTop:35 }}>
+
+        <View style={{marginLeft:10,marginTop:10,flexDirection:'row' ,paddingTop:2 }}>
+            <Entypo name="chevron-small-left" size={35} color="#333" onPress={()=>navigation.goBack()} />
+            <Avatar.Image
+              size={40}
+              style={{marginTop:0}}
+              source={{ uri: info.thumb }}
+              />
+            <Text style={{fontSize:18,marginTop:10,paddingHorizontal:10}}>{info.title}</Text>
+        </View>     
+        
+        <View style={{flexDirection:"row",marginRight:10,marginTop:10}}>
+          <View>
+            <Ionicons.Button onPress={()=>navigation.navigate('ChatRoom',{'info': itemInfo })} backgroundColor={null} color="#333" name="chatbox-outline" size={24} color="black" />
+            <View style={{
+              position:'absolute',
+              top:8,
+              right:17,
+              height:9,
+              width:9,
+              borderRadius:20,
+              backgroundColor:'red',
+            }}></View>
+        </View>
+          <Ionicons.Button backgroundColor={null} name="videocam-outline" size={24} color="black" />
+          <MaterialIcons.Button name="more-vert" size={24} color="black" backgroundColor={null} color="#333" />
+
+
+       </View>
+       </View>
+    )
+  }
+  return(
+    <View>
+    {ViewDetailsHeader()}
+    {ChartRoom()}
+
+    </View>
+  );
+}
+
+
+
 
 const Stack = createNativeStackNavigator();
 function CycleStackScreen() {
@@ -223,7 +503,12 @@ function CycleStackScreen() {
         <Stack.Screen name="Index" component={CycleScreen} options={{
           headerShown:false,
         }}/>
-        <Stack.Screen name="CycleDetails" component={CycleDetailScreen}/>
+        <Stack.Screen name="CycleDetails" component={CycleDetailScreen} options={{
+          headerShown:false,
+        }}/>
+        <Stack.Screen name="ChatRoom" component={CycleChatRoom} options={{
+          headerShown:false,
+        }}/>
       </Stack.Navigator>
   );
 }
